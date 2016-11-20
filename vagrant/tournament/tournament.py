@@ -104,6 +104,6 @@ def swissPairings():
     """
     db = connect()
     c = db.cursor()
-    c.execute("")
+    c.execute("SELECT * FROM players ORDER BY wins DESC")
     db.commit()
     db.close()
