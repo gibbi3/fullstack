@@ -18,8 +18,6 @@ CREATE TABLE players(
 
 CREATE TABLE matches(
   match_num SERIAL PRIMARY KEY,
-  playerone INT REFERENCES players (id),
-  playertwo INT REFERENCES players (id),
   winner INT REFERENCES players (id),
   loser INT REFERENCES players (id)
 )

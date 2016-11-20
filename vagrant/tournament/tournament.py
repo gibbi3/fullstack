@@ -15,7 +15,9 @@ def deleteMatches():
     """Remove all the match records from the database."""
     db = connect()
     c = db.cursor()
-    c.execute("DELETE FROM matches")
+    c.execute("DELETE FROM matches CASCADE")
+    c.execute("UPDATE players SET matches = 0")
+    c.execute("UPDATE players SET wins = 0")
     db.commit()
     db.close()
 
@@ -23,7 +25,7 @@ def deletePlayers():
     """Remove all the player records from the database."""
     db = connect()
     c = db.cursor()
-    c.execute("DELETE FROM players")
+    c.execute("DELETE FROM players CASCADE")
     db.commit()
     db.close()
 
@@ -76,7 +78,14 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-
+    db = connect()
+    c = db.cursor()
+    c.execute("INSERT INTO matches (winner, loser) values (%s, %s)", (winner, loser,))
+    c.execute("UPDATE players SET matches = matches + 1 WHERE id = %s", (winner,))
+    c.execute("UPDATE players SET matches = matches + 1 WHERE id = %s", (loser,))
+    c.execute("UPDATE players SET wins = wins + 1 WHERE id = %s", (winner,))
+    db.commit()
+    db.close()
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -93,3 +102,8 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    db = connect()
+    c = db.cursor()
+    c.execute("")
+    db.commit()
+    db.close()
