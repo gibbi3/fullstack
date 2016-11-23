@@ -106,9 +106,13 @@ def swissPairings():
     c = db.cursor()
     c.execute("SELECT id, name FROM players ORDER BY wins DESC")
     data = c.fetchall()
-    list = []
-    list.append(c.fetchall())
-    matches = [(list[i],list[i+1]) for i in range(0,len(list)-2,2)]
-    # matches = [data[x:x+2] for x in range(0, len(data), 2)]
+    results = []
+    for x, player in enumerate(data):
+        if x % 2 == 0:
+            match = (data[x][0],
+                            data[x][1],
+                            data[x+1][0],
+                            data[x+1][1])
+            results.append(match)
     db.close()
-    return matches
+    return results
