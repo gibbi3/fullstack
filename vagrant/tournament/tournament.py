@@ -105,14 +105,16 @@ def swissPairings():
     db = connect()
     c = db.cursor()
     c.execute("SELECT id, name FROM players ORDER BY wins DESC")
-    data = c.fetchall()
+    query = c.fetchall()
     results = []
-    for x, player in enumerate(data):
-        if x % 2 == 0:
-            match = (data[x][0],
-                            data[x][1],
-                            data[x+1][0],
-                            data[x+1][1])
+    for x in xrange(0, len(query), 2):
+        if len(query) % 2 == 0:
+            match = (query[x][0],
+                     query[x][1],
+                     query[x+1][0],
+                     query[x+1][1])
             results.append(match)
+        else:
+            print "This tournament requires an even number of players."
     db.close()
     return results
