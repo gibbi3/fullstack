@@ -1,1 +1,41 @@
+.site_header {
+  text-align: center;
+  width: 100%;
+  background-color: midnightblue;
+}
 
+.site_header_link {
+  color: white;
+  font: courier;
+  text-decoration: none;
+}
+
+.index_list {
+  text-align: center;
+}
+
+.list_item {
+  text-decoration: none;
+  color: midnightblue;
+  font-weight: bold;
+}
+
+.header {
+  display: flex;
+  width: 100%;
+}
+
+.menu_name {
+  text-align: left;
+  width: 50%;
+}
+
+.item_name {
+  font-size: 20px;
+  font-style: italic;
+}
+
+.home_link {
+  text-align: right;
+  width: 50%;
+}

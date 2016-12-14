@@ -1,6 +1,6 @@
-<html>
-  <body>
-    <h1>Edit {{item.name}}:</h1>
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Edit {{item.name}}:</h2>
 
     <form action="{{url_for('editMenuItem', restaurant_id=restaurant_id, menu_id=item.id)}}" method = 'POST'>
 
@@ -10,5 +10,4 @@
        <input type='text' size='30' name='price' placeholder='{{item.price}}'><br>
        <input type='submit' value='Change'>
     </form>
-  </body>
-</html>
+{% endblock %}

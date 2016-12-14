@@ -12,6 +12,22 @@ session = DBSession()
 
 
 @app.route('/')
+@app.route('/restaurants/')
+def restaurantList():
+    restaurants = session.query(Restaurant).all()
+    return render_template('index.html', restaurants=restaurants)
+
+@app.route('/restaurants/new/', methods=['GET', 'POST'])
+def newRestaurant():
+    if request.method == 'POST':
+        new_restaurant=Restaurant(name=request.form['name'])
+        session.add(new_restaurant)
+        session.commit()
+        flash("New restaurant created!")
+        return redirect(url_for('restaurantList'))
+    else:
+        return render_template('newrestaurant.html')
+
 @app.route('/restaurant/<int:restaurant_id>/')
 def restaurantMenu(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
@@ -22,7 +38,10 @@ def restaurantMenu(restaurant_id):
 def newMenuItem(restaurant_id):
     if request.method == 'POST':
         newItem = MenuItem(
-            name=request.form['name'], restaurant_id=restaurant_id)
+            name=request.form['name'],
+            description=request.form['description'],
+            price=request.form['price'],
+            restaurant_id=restaurant_id)
         session.add(newItem)
         session.commit()
         flash("New menu item created!")

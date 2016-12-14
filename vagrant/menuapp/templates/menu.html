@@ -1,9 +1,9 @@
-<html>
-  <head>
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-  </head>
-  <body>
-    <h1>{{ restaurant.name }}</h1>
+{% extends 'base.html' %}
+{% block content %}
+    <div class='header'>
+      <h1 class='menu_name'>{{ restaurant.name }}</h1>
+      <a href="{{url_for('restaurantList')}}" class='home_link'><h3>Return Home</h3></a>
+    </div>
 
       {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -14,10 +14,10 @@
           </ul>
       {% endif %}
       {% endwith %}
-
+    <hr>
       {% for i in menu_items %}
 
-      {{ i.name }}
+      <div class='item_name'>{{ i.name }}</div>
     <br>
 
       {{ i. description }}
@@ -32,5 +32,4 @@
 
       {% endfor %}
     <a href="{{url_for('newMenuItem', restaurant_id=restaurant.id)}}">Create New Item</a>
-  </body>
-</html>
+{% endblock %}

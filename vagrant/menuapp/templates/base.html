@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <div class='site_header'>
+      <a href='{{url_for('restaurantList')}}', class=site_header_link><h1>FOODSTUFFS</h1></a>
+    </div>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>
