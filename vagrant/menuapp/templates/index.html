@@ -1,24 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class='index_list'>
+
 <h2 class='index_title'>Restaurants</h2>
+<div class='flash-mess'>
       {% with messages = get_flashed_messages() %}
       {% if messages %}
-          <ul>
+          <div>
           {% for message in messages %}
-            <li><strong>{{ message }}</strong></li>
+            <div><strong>{{ message }}</strong></div>
           {% endfor %}
-          </ul>
+          </div>
       {% endif %}
       {% endwith %}
-
+  </div>
+<div class='index_list'>
       {% for i in restaurants %}
 
       <a href="{{url_for('restaurantMenu', restaurant_id = i.id)}}" class='list_item'>{{ i.name }}</a>
     <br><br>
 
       {% endfor %}
-    <a href="{{url_for('newRestaurant')}}">Create New Restaurant</a>
+</div>
+<div class='footer'>
+    <a href="{{url_for('newRestaurant')}}" class='create-rest-link'>Create New Restaurant</a>
 </div>
 {% endblock %}

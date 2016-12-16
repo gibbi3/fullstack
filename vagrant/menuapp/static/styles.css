@@ -1,7 +1,35 @@
+html {
+  font-family: cursive;
+}
+
+body {
+  background: beige;
+}
+
+h1 {
+  font-variant: small-caps;
+  font-size: 25px;
+  border-radius: 50px;
+  text-align: right;
+  font-family: courier;
+  padding: 20px;
+}
 .site_header {
   text-align: center;
   width: 100%;
   background-color: midnightblue;
+  border-radius: 24px;
+}
+
+.footer {
+  text-align: center;
+  margin: 20px;
+}
+
+.create-rest-link {
+  text-decoration: none;
+  color: black;
+  transform:rotate(20);
 }
 
 .site_header_link {
@@ -10,13 +38,32 @@
   text-decoration: none;
 }
 
+.index_title {
+  text-align: center;
+  font-size: 50;
+  margin: 20px;
+}
+
+.flash-mess {
+  text-align: center;
+  font-size: 30px;
+  margin: 20px;
+}
+
 .index_list {
   text-align: center;
+  padding: 20px;
+  margin: auto;
+  width: 60%;
+  background: midnightblue;
+  border-radius: 50px;
+  font-family: courier;
+  font-size: 18px;
 }
 
 .list_item {
   text-decoration: none;
-  color: midnightblue;
+  color: white;
   font-weight: bold;
 }
 
@@ -38,4 +85,20 @@
 .home_link {
   text-align: right;
   width: 50%;
+}
+
+.rest-form {
+  width: 50%;
+  margin: auto;
+}
+
+.text-input {
+  width: 100%;
+  height: 30px;
+}
+
+.button-input {
+  float: right;
+  outline: solid midnightblue;
+  margin-top: 20px;
 }
