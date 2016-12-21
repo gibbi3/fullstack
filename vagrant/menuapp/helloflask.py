@@ -24,6 +24,28 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session['email'],
+        picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id = user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
+
+
 @app.route('/login')
 def Login():
     state=''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -104,6 +126,11 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    user_id = getUserID(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+        login_session['user_id'] = user_id
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -175,7 +202,9 @@ def deleteRestaurant(restaurant_id):
         return redirect('/login')
     doomed_restaurant=session.query(Restaurant).filter_by(id=restaurant_id).one()
     menu_items=session.query(MenuItem).filter_by(restaurant_id=doomed_restaurant.id).all()
-    if request.method == 'POST':
+    if doomed_restaurant.user_id != login_session.get('user_id'):
+        return "<script>function myFunction() {if (window.confirm('You are not authorized to delete this shit.')) {window.location.href ='/restaurants/'};}</script><body onload='myFunction()''>"
+    elif request.method == 'POST':
         for i in menu_items:
             session.delete(i)
         session.delete(doomed_restaurant)
@@ -200,7 +229,8 @@ def newMenuItem(restaurant_id):
             name=request.form['name'],
             description=request.form['description'],
             price=request.form['price'],
-            restaurant_id=restaurant_id)
+            restaurant_id=restaurant_id,
+            user_id=login_session.get('user_id'))
         session.add(newItem)
         session.commit()
         flash("New menu item created!")
@@ -213,15 +243,17 @@ def newMenuItem(restaurant_id):
 def editMenuItem(restaurant_id, menu_id):
     if 'username' not in login_session:
         return redirect('/login')
-    editedItem = session.query(MenuItem).filter_by(id = menu_id).one()
+    edited_item = session.query(MenuItem).filter_by(id = menu_id).one()
+    if edited_item.user_id != login_session.get('user_id'):
+        return "<script>function myFunction() {if (window.confirm('You are not authorized to edit this shit.')) {window.location.href ='/restaurants/'};}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         if request.form['name']:
-            editedItem.name = request.form['name']
+            edited_item.name = request.form['name']
         if request.form['description']:
-            editedItem.description = request.form['description']
+            edited_item.description = request.form['description']
         if request.form['price']:
-            editedItem.price = request.form['price']
-        session.add(editedItem)
+            edited_item.price = request.form['price']
+        session.add(edited_item)
         session.commit()
         flash("Item successfully edited!")
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
@@ -233,14 +265,16 @@ def editMenuItem(restaurant_id, menu_id):
 def deleteMenuItem(restaurant_id, menu_id):
     if 'username' not in login_session:
         return redirect('/login')
-    doomedItem = session.query(MenuItem).filter_by(id = menu_id).one()
+    doomed_item = session.query(MenuItem).filter_by(id = menu_id).one()
+    if doomed_item.user_id != login_session.get('user_id'):
+        return "<script>function myFunction() {if (window.confirm('You are not authorized to delete this shit.')) {window.location.href ='/restaurants/'};}</script><body onload='myFunction()''>"
     if request.method == 'POST':
-        session.delete(doomedItem)
+        session.delete(doomed_item)
         session.commit()
         flash("Item successfully deleted.")
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     else:
-        return render_template('deletemenuitem.html', restaurant_id=restaurant_id, menu_id=menu_id, item=doomedItem)
+        return render_template('deletemenuitem.html', restaurant_id=restaurant_id, menu_id=menu_id, item=doomed_item)
 
 
 @app.route('/restaurant/<int:restaurant_id>/JSON')
