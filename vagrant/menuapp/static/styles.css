@@ -21,6 +21,15 @@ h1 {
   border-radius: 24px;
 }
 
+.auth-links {
+  
+}
+
+.log-link {
+  color: white;
+  text-decoration: none;
+}
+
 .footer {
   text-align: center;
   margin: 20px;
