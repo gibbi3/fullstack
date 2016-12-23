@@ -2,7 +2,7 @@
 {% block content %}
 
 
-<h2 class='index_title'>Restaurants</h2>
+<h2 class='index_title'>Item Categories</h2>
 <div class='flash-mess'>
       {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -15,14 +15,14 @@
       {% endwith %}
   </div>
 <div class='index_list'>
-      {% for i in restaurants %}
+      {% for i in categories %}
 
-      <a href="{{url_for('restaurantMenu', restaurant_id = i.id)}}" class='list_item'>{{ i.name }}</a>
+      <a href="{{url_for('storeFront')}}" class='list_item'>{{ i.name }}</a>
     <br><br>
 
       {% endfor %}
 </div>
 <div class='footer'>
-    <a href="{{url_for('newRestaurant')}}" class='create-rest-link'>Create New Restaurant</a>
+    <a href="">Create New Category</a>
 </div>
 {% endblock %}

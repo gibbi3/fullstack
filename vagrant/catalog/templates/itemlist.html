@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class='header'>
+      <h1 class='menu_name'>{{ category.name }}</h1><br>
+    </div>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          <ul>
+          {% for message in messages %}
+            <li><strong>{{ message }}</strong></li>
+          {% endfor %}
+          </ul>
+      {% endif %}
+      {% endwith %}
+    <hr>
+      {% for i in items %}
+        <div class="media">
+          <div class="media-body">
+            <h4 class="media-heading">{{ i.name }}</h4><br>
+            {{ i. description }}<br><br>
+            {{ i.price }}
+          </div>
+          <div class="media-left media-middle">
+            <a href="#">
+              <img class="media-object" src="{{ i.picture }}" alt="...">
+            </a>
+          </div>
+        </div>
+        {% if i.user_id is sameas user %}
+        <div class="dropdown">
+          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            Options
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a href="{{url_for('editItem', category_id = category.id, item_id = i.id)}}">Edit</a></li>
+            <li><a href="{{url_for('deleteItem', category_id = category.id, item_id = i.id)}}">Delete</a></li>
+          </ul>
+        </div>
+        {% endif %}
+    <br><br>
+    <hr>
+      {% endfor %}
+      <ul class="nav nav-pills">
+        <li role="presentation" class="active">
+          <a href="{{url_for('newItem', category_id = category.id )}}">Add Item
+          </a></li>
+      </ul>
+    <br>
+</div>
+{% endblock %}

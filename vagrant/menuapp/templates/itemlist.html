@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class='header'>
-      <h1 class='menu_name'>{{ restaurant.name }}</h1>
-      <a href="{{url_for('restaurantList')}}" class='home_link'><h3>Return Home</h3></a>
+      <h1 class='menu_name'>{{ category.name }}</h1>
+      <a href="{{url_for('storeFront')}}" class='home_link'><h3>Return Home</h3></a>
     </div>
 
       {% with messages = get_flashed_messages() %}
@@ -16,6 +16,16 @@
       {% endwith %}
     <hr>
       {% for i in menu_items %}
+      <div class="media">
+        <div class="media-left media-middle">
+          <a href="#">
+            <img class="media-object" src="i.picture" alt="...">
+          </a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">Middle aligned media</h4>
+        </div>
+      </div>
 
       <div class='item_name'>{{ i.name }}</div>
     <br>
@@ -26,7 +36,7 @@
       {{ i.price }}
     <br><br>
       <a href="{{url_for('editMenuItem', restaurant_id = restaurant.id, menu_id = i.id)}}">Edit</a>
-    <br>
+    <br><br>
       <a href="{{url_for('deleteMenuItem', restaurant_id = restaurant.id, menu_id = i.id)}}">Delete</a>
     <br><br><hr>
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bellAgora</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="/static/custom.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class='container'>
+      <div class="col-md-6">
+        <div class='flash-mess'>
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div>
+              {% for message in messages %}
+                <div class="alert alert-success" role="alert">{{ message }}</div>
+              {% endfor %}
+                </div>
+              {% endif %}
+              {% endwith %}
+        </div>
+      </div>
+      <div class="col-md-6">
+      <div class="site-header">
+        <a href='{{url_for('storeFront')}}', class=site_header_link><h2>bellAgora</h2></a>
+        <div class="auth-links">
+          {% if 'username' not in session %}
+          <a class="log-link" href="{{url_for('Login')}}">Click here to Log in</a>
+          {% else %}
+          <a class="log-link" href="{{url_for('disconnect')}}">Log out</a>
+          {% endif %}
+        </div>
+      </div>
+      </div>
+    </div>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>

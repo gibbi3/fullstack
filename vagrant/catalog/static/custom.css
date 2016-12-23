@@ -1,0 +1,104 @@
+body {
+  margin-bottom: 50px;
+}
+
+input {
+  margin: 15px;
+  border-radius: 10px;
+}
+
+.jumbotron {
+  margin-bottom: 10px;
+}
+
+.media-object {
+  max-width: 100px;
+  margin-left: 10px;
+}
+
+.site-header {
+  text-align: right;
+}
+
+.auth-links {
+  margin-bottom: 20px;
+}
+
+.index_title {
+  margin-bottom: 40px;
+}
+
+.list_item {
+  font-size: 20px;
+}
+
+.marquis {
+  text-align: left;
+}
+
+.front-banner {
+  margin-top: 20px;
+}
+
+.banner-pic {
+  outline: solid black;
+  width: 100%;
+}
+
+.list_item {
+  margin: 10px;
+}
+
+.alert-success {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.form-title {
+  margin-bottom: 40px;
+}
+
+.form-container {
+  text-align: center;
+  background: aliceblue;
+  border-radius: 25px;
+}
+
+.input {
+  border-radius: 10px;
+}
+
+.input-title {
+  font-size: 18px;
+}
+
+.input-button {
+  width: 200px;
+  height: 40px;
+}
+
+.login-buttons {
+  text-align: center;
+  background: aliceblue;
+  border-radius: 25px;
+  height: 50%;
+  padding: 10px;
+}
+
+.login-message {
+  margin-bottom: 40px;
+}
+
+.result {
+  text-align: center;
+}
+
+.dropdown {
+  margin-top: 20px;
+}
+
+@media only screen and (max-width: 991px) {
+  input{
+    width: 80%;
+  }
+}
