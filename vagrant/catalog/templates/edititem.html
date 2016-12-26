@@ -3,15 +3,19 @@
 <div class="container">
   <h2 class=form-title>Edit {{item.name}}:</h2>
   <div class="form-container">
-    <form action="{{url_for('editItem', category_id=category_id, item_id=item.id)}}" method = 'POST'>
+    <form action="{{url_for('editItem', category_id=category_id,
+                 item_id=item.id)}}" method = 'POST'>
        <p class="input-title">Name:</p>
        <input type='text' size='50' name='name' placeholder='{{item.name}}'><br>
        <p class="input-title">Description:</p>
-       <input type='text' size='100' name='description' placeholder='{{item.description}}'><br>
+       <input type='text' size='100' name='description'
+              placeholder='{{item.description}}'><br>
        <p class="input-title">Picture URL:</p>
-       <input type='text' size='100' name='picture' placeholder='{{item.picture}}'><br>
+       <input type='text' size='100' name='picture'
+              placeholder='{{item.picture}}'><br>
        <p class="input-title">Price:</p>
-       <input type='text' size='30' name='price' placeholder='{{item.price}}'><br>
+       <input type='text' size='30' name='price'
+              placeholder='{{item.price}}'><br>
        <input type='submit' value='Change'>
     </form>
   </div>

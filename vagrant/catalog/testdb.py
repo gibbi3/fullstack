@@ -16,7 +16,7 @@ User1 = User(name="Gil Birdsong", email="gibbirdsong@gmail.com",
 session.add(User1)
 session.commit()
 
-# Menu for UrbanBurger
+# First Category, Books
 category1 = Category(user_id=1, name="Books")
 
 session.add(category1)
@@ -36,7 +36,7 @@ session.add(book2)
 session.commit()
 
 
-# Menu for Super Stir Fry
+# 2nd Category, Albums
 category2 = Category(user_id=1, name="Albums")
 
 session.add(category2)
@@ -51,4 +51,4 @@ session.commit()
 
 
 
-print "added menu items!"
+print "Created initial user, ategories, and items!"

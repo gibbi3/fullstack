@@ -11,10 +11,11 @@
       <h2 class='index_title'>Item Categories</h2>
         <div class='index_list'>
           {% for i in categories %}
-            <a href="{{url_for('itemList', category_id = i.id)}}" class='list_item'>{{ i.name }}</a>
+            <a href="{{url_for('itemList', category_id = i.id)}}"
+               class='list_item'>{{ i.name }}</a>
             <br><br><br>
           {% endfor %}
-      </div>
+        </div>
         {% if 'username' in session %}
           <ul class="nav nav-pills">
             <li role="presentation" class="active">
@@ -26,7 +27,8 @@
   </div>
   <div class="front-banner">
     <div class="col-md-8">
-      <img src="/static/img/Minoan.png" class="banner-pic" alt="three Minoan women">
+      <img src="/static/img/Minoan.png" class="banner-pic"
+           alt="three Minoan women">
     </div>
   </div>
 </div>

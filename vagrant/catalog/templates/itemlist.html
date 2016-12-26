@@ -29,13 +29,17 @@
         </div>
         {% if i.user_id is sameas user %}
         <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          <button class="btn btn-default dropdown-toggle" type="button"
+            id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="true">
             Options
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li><a href="{{url_for('editItem', category_id = category.id, item_id = i.id)}}">Edit</a></li>
-            <li><a href="{{url_for('deleteItem', category_id = category.id, item_id = i.id)}}">Delete</a></li>
+            <li><a href="{{url_for('editItem', category_id = category.id,
+              item_id = i.id)}}">Edit</a></li>
+            <li><a href="{{url_for('deleteItem', category_id = category.id,
+              item_id = i.id)}}">Delete</a></li>
           </ul>
         </div>
         {% endif %}
