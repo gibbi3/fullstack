@@ -389,6 +389,7 @@
     "buttons.less",
     "responsive-utilities.less",
     "button-groups.less",
+    "navs.less",
     "jumbotron.less",
     "media.less",
     "list-group.less",
@@ -404,5 +405,5 @@
     "scrollspy.js",
     "transition.js"
   ],
-  "customizerUrl": "http://getbootstrap.com/customize/?id=07457372209a29381097a4a7ddf0b20c"
+  "customizerUrl": "http://getbootstrap.com/customize/?id=3910d8818b5b365387c844f45693c2a3"
 }
