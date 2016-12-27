@@ -65,7 +65,7 @@ def deleteCategory(category_id):
     items=session.query(Item).filter_by(category_id=
         doomed_category.id).all()
     if doomed_category.user_id != login_session.get('user_id'):
-        return "<script>function myFunction() {if (window.confirm('You are not authorized to delete this shit.')) {window.location.href ='/bellagora/'};}</script><body onload='myFunction()''>"
+        return render_template('error.html', item=doomed_category)
     elif request.method == 'POST':
         for i in items:
             session.delete(i)
@@ -105,7 +105,7 @@ def editItem(category_id, item_id):
         return redirect('/login')
     edit_item = session.query(Item).filter_by(id = item_id).one()
     if edit_item.user_id != login_session.get('user_id'):
-        return "<script>function myFunction() {if (window.confirm('You are not authorized to edit this shit.')) {window.location.href ='/restaurants/'};}</script><body onload='myFunction()''>"
+        return render_template('error.html', item=edit_item)
     if request.method == 'POST':
         if request.form['name']:
             edit_item.name = request.form['name']
@@ -132,7 +132,7 @@ def deleteItem(category_id, item_id):
         return redirect('/login')
     doomed_item = session.query(Item).filter_by(id = item_id).one()
     if doomed_item.user_id != login_session.get('user_id'):
-        return "<script>function myFunction() {if (window.confirm('You are not authorized to delete this shit.')) {window.location.href ='/restaurants/'};}</script><body onload='myFunction()''>"
+        return render_template('error.html', item=doomed_item)
     if request.method == 'POST':
         session.delete(doomed_item)
         session.commit()
@@ -349,9 +349,11 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "max-width: 200px; max-height: 200px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' "style = "max-width: 200px; max-height: 200px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
+    print login_session['user_id']
+    print login_session['username']
     return output
     # DISCONNECT - Revoke a current user's token and reset their login_session
 
@@ -379,7 +381,8 @@ def gdisconnect():
     	response.headers['Content-Type'] = 'application/json'
     	return response
     else:
-    	response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+    	response = make_response(json.dumps
+            ('Failed to revoke token for given user.', 400))
     	response.headers['Content-Type'] = 'application/json'
     	return response
 
