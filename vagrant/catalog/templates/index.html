@@ -16,7 +16,7 @@
             <br><br><br>
           {% endfor %}
         </div>
-        {% if 'username' in session %}
+        {% if user is sameas admin %}
           <ul class="nav nav-pills">
             <li role="presentation" class="active">
               <a href="{{url_for('newCategory')}}">Create Category

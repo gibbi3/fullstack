@@ -3,17 +3,12 @@
 <div class="container">
     <div class='header'>
       <h1 class='menu_name'>{{ category.name }}</h1><br>
-    </div>
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-          <ul>
-          {% for message in messages %}
-            <li><strong>{{ message }}</strong></li>
-          {% endfor %}
-          </ul>
+      {% if user is sameas admin %}
+        <a href="{{url_for('deleteCategory', category_id = category.id )}}"
+           class='delete-cat-link'>Delete Category</a>
       {% endif %}
-      {% endwith %}
-    <hr>
+    </div>
+      <hr>
       {% for i in items %}
         <div class="media">
           <div class="media-body">
@@ -39,8 +34,8 @@
           </ul>
         </div>
         {% endif %}
-    <br><br>
-    <hr>
+        <br><br>
+        <hr>
       {% endfor %}
       {% if 'username' in session %}
       <ul class="nav nav-pills">

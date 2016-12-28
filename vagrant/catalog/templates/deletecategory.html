@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>Are you sure you want to delete {{doomed_category.name}}?</h1>
-    <form action="{{url_for('deleteCategory', category_id=category_id)}}"
-          method = 'POST'>
-       <input type='submit' value='Yes'>
-    </form>
+<div class="container">
+  <h1>Are you sure you want to delete {{doomed_category.name}}?</h1>
+  <form action="{{url_for('deleteCategory', category_id=category_id)}}"
+        method = 'POST'>
+     <input class="input-button" type='submit' value='I&#39;m sure'>
+  </form>
+</div>
 {% endblock %}

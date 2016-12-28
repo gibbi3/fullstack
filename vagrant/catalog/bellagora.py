@@ -23,12 +23,20 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+admin = 1
 
 @app.route('/')
 @app.route('/bellagora/')
 def storeFront():
     categories = session.query(Category).all()
-    return render_template('index.html', categories=categories)
+    user = login_session.get('user_id')
+    print "Current user id is %s," % user
+    print "Admin id is %s," % admin
+    if user == admin:
+        print "Admin privleges granted."
+    return render_template('index.html', categories=categories,
+                                         user=user,
+                                         admin=admin)
 
 
 @app.route('/bellagora/<int:category_id>')
@@ -36,9 +44,14 @@ def itemList(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category.id)
     user = login_session.get('user_id')
+    print "Current user id is %s," % user
+    print "Admin id is %s," % admin
+    if user == admin:
+        print "Admin privleges granted."
     return render_template('itemlist.html', category=category,
                                             items=items,
-                                            user=user)
+                                            user=user,
+                                            admin=admin)
 
 
 @app.route('/bellagora/new-category/', methods=['GET', 'POST'])
@@ -75,7 +88,7 @@ def deleteCategory(category_id):
         return redirect(url_for('storeFront'))
     else:
         return render_template('deletecategory.html', category_id=category_id,
-            doomed_category=doomed_category, user=user, creator=creator)
+            doomed_category=doomed_category)
 
 
 @app.route('/bellagora/<int:category_id>/new/', methods=['GET', 'POST'])

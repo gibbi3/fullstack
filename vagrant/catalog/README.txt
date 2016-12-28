@@ -78,11 +78,8 @@ USING THE APPLICATION:
   machine, or whichever port the user might select (the port may be changed at
   the tail-end of bellagora.py).
 
-  The database and most of its entries can then be managed through the site
-  itself. However, categories may only be created via the site, and Users are
-  added automatically. The inability to delete a category was a conscious
-  decision, as the deletion of a category by any user could result in the
-  deletion of items within the category created by other users. Users and
-  categories must be managed manually in the python console. There is, however,
-  a "deleteCategory" function within the application itself if the user should
-  desire to implement such a feature, perhaps limiting it to a primary user.
+  The database and most of its entries can then be instantiated through the site
+  itself. It is important to note that the initiating user (you) will be the
+  only one able to add or delete categories. This can be altered, however, by
+  equating the "admin" variable near the top of bellagora.py to the ID of the
+  desired user. By default, it will be 1.
