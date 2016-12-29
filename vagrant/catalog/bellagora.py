@@ -105,13 +105,16 @@ def deleteCategory(category_id):
     Returns:
         A template confirming a category's deletion, redirect to homepage
     """
+    user = login_session.get('user_id')
     if 'username' not in login_session:
         return redirect('/login')
-    doomed_category = session.query(Category).filter_by(id=category_id).one()
-    items = session.query(Item).filter_by(category_id=doomed_category.id).all()
-    if doomed_category.user_id != login_session.get('user_id'):
-        return render_template('error.html', item=doomed_category)
+    if user != admin:
+        return render_template('adminerror.html')
     elif request.method == 'POST':
+        doomed_category = session.query(Category).filter_by(
+            id=category_id).one()
+        items = session.query(Item).filter_by(
+            category_id=doomed_category.id).all()
         for i in items:
             session.delete(i)
         session.delete(doomed_category)
