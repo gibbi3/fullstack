@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h1>Only the site administrator may add or remove categories.</h1>
+  <div class="col-md-12">
+    <a href="{{url_for('storeFront')}}"><h2 class="error-home-link">Return Home
+    </h2></a>
+  </div>
+</div>
+{% endblock %}

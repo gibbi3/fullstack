@@ -1,19 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-app = Flask(__name__)
-
+import random
+import string
+import httplib2
+import json
+import requests
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
-
 from flask import session as login_session
-import random, string
-
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
-import httplib2
-import json
-from flask import make_response
-import requests
+from flask import Flask, render_template, make_response
+from flask import request, redirect, url_for, flash, jsonify
+
+
+app = Flask(__name__)
 
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
@@ -23,11 +23,20 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+# Set equal to ID of user authorized to add or remove categories
 admin = 1
+
 
 @app.route('/')
 @app.route('/bellagora/')
 def storeFront():
+    """
+    storeFront: Renders template populated w/ categories
+    Args:
+        N/A
+    Returns:
+        A template with a list of categories (strings)
+    """
     categories = session.query(Category).all()
     user = login_session.get('user_id')
     print "Current user id is %s," % user
@@ -35,12 +44,20 @@ def storeFront():
     if user == admin:
         print "Admin privleges granted."
     return render_template('index.html', categories=categories,
-                                         user=user,
-                                         admin=admin)
+                           user=user,
+                           admin=admin)
 
 
 @app.route('/bellagora/<int:category_id>')
 def itemList(category_id):
+    """
+    itemList: Lists the items within a chosen category
+    Args:
+        category_id (int): Takes in a category's ID and uses it to query
+        the database for items linked to it
+    Returns:
+        A template with a list of items belonging to a category (strings)
+    """
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category.id)
     user = login_session.get('user_id')
@@ -49,18 +66,28 @@ def itemList(category_id):
     if user == admin:
         print "Admin privleges granted."
     return render_template('itemlist.html', category=category,
-                                            items=items,
-                                            user=user,
-                                            admin=admin)
+                           items=items,
+                           user=user,
+                           admin=admin)
 
 
 @app.route('/bellagora/new-category/', methods=['GET', 'POST'])
 def newCategory():
+    """
+    newCategory: Creates a new category within the database
+    Args:
+        N/A
+    Returns:
+        A template for submitting a new category, redirect to homepage
+    """
+    user = login_session.get('user_id')
     if 'username' not in login_session:
         return redirect('/login')
+    if user != admin:
+        return render_template('adminerror.html')
     if request.method == 'POST':
-        new_category=Category(name=request.form['name'],
-            user_id=login_session['user_id'])
+        new_category = Category(name=request.form['name'],
+                                user_id=login_session['user_id'])
         session.add(new_category)
         session.commit()
         flash("New item category created!")
@@ -69,14 +96,19 @@ def newCategory():
         return render_template('newcategory.html')
 
 
-@app.route('/bellagora/<int:category_id>/delete', methods=['GET','POST'])
+@app.route('/bellagora/<int:category_id>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_id):
+    """
+    deleteCategory: Removes a category from Category table in the database
+    Args:
+        category_id (int): Takes in ID of category to be deleted
+    Returns:
+        A template confirming a category's deletion, redirect to homepage
+    """
     if 'username' not in login_session:
         return redirect('/login')
-    doomed_category=session.query(Category).filter_by(id=
-        category_id).one()
-    items=session.query(Item).filter_by(category_id=
-        doomed_category.id).all()
+    doomed_category = session.query(Category).filter_by(id=category_id).one()
+    items = session.query(Item).filter_by(category_id=doomed_category.id).all()
     if doomed_category.user_id != login_session.get('user_id'):
         return render_template('error.html', item=doomed_category)
     elif request.method == 'POST':
@@ -88,11 +120,20 @@ def deleteCategory(category_id):
         return redirect(url_for('storeFront'))
     else:
         return render_template('deletecategory.html', category_id=category_id,
-            doomed_category=doomed_category)
+                               doomed_category=doomed_category)
 
 
 @app.route('/bellagora/<int:category_id>/new/', methods=['GET', 'POST'])
 def newItem(category_id):
+    """
+    newItem: Inserts a new item into a database, linking it to a category.
+    Args:
+        category_id (int): Takes in the ID of the category to which the new
+        item will belong.
+    Returns:
+        A template for the creation of a new item, redirect to itemList page
+        belonging to ID matching category_id
+    """
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
@@ -112,11 +153,21 @@ def newItem(category_id):
 
 
 @app.route('/bellagora/<int:category_id>/<item_id>/edit/',
-    methods=['GET', 'POST'])
+           methods=['GET', 'POST'])
 def editItem(category_id, item_id):
+    """
+    editItem: Edits the values pertaining to a database entry
+    Args:
+        category_id (int): Takes in ID belonging to category of the item to be
+        edited
+        item_id (int): Takes in the specific ID of the item to be edited
+    Returns:
+        A template for editing item specified by item_id, redirect to itemList
+        page belonging to ID matching category_id.
+    """
     if 'username' not in login_session:
         return redirect('/login')
-    edit_item = session.query(Item).filter_by(id = item_id).one()
+    edit_item = session.query(Item).filter_by(id=item_id).one()
     if edit_item.user_id != login_session.get('user_id'):
         return render_template('error.html', item=edit_item)
     if request.method == 'POST':
@@ -134,16 +185,26 @@ def editItem(category_id, item_id):
         return redirect(url_for('itemList', category_id=category_id))
     else:
         return render_template('edititem.html', category_id=category_id,
-                                                item_id=item_id,
-                                                item=edit_item)
+                               item_id=item_id,
+                               item=edit_item)
 
 
 @app.route('/bellagora/<int:category_id>/<item_id>/delete/',
-    methods=['GET', 'POST'])
+           methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
+    """
+    deleteItem: Deletes an item from the database
+    Args:
+        category_id (int): Takes in ID belonging to category of the item to be
+        deleted
+        item_id (int): Takes in the specific ID of the item to be deleted
+    Returns:
+        A template confirming an item's deletion, redirect to itemList
+        page belonging to ID matching category_id.
+    """
     if 'username' not in login_session:
         return redirect('/login')
-    doomed_item = session.query(Item).filter_by(id = item_id).one()
+    doomed_item = session.query(Item).filter_by(id=item_id).one()
     if doomed_item.user_id != login_session.get('user_id'):
         return render_template('error.html', item=doomed_item)
     if request.method == 'POST':
@@ -153,12 +214,19 @@ def deleteItem(category_id, item_id):
         return redirect(url_for('itemList', category_id=category_id))
     else:
         return render_template('deleteitem.html', category_id=category_id,
-                                                  item_id=item_id,
-                                                  item=doomed_item)
+                               item_id=item_id,
+                               item=doomed_item)
 
 
 @app.route('/bellagora/<int:category_id>/JSON')
 def categoryStockJSON(category_id):
+    """
+    categoryStockJSON: Displays jsonified category w/ its items
+    Args:
+        category_id (int): Takes in ID belonging to desired category
+    Returns:
+        A jsonified representation of a category and the items related to it
+    """
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category_id).all()
     return jsonify(Items=[i.serialize for i in items])
@@ -166,6 +234,15 @@ def categoryStockJSON(category_id):
 
 @app.route('/bellagora/<int:category_id>/<int:item_id>/JSON/')
 def itemJSON(category_id, item_id):
+    """
+    itemJSON: Displays jsonified item
+    Args:
+        category_id (int): Takes in ID belonging to category to which item
+        belongs
+        item_id (int): Takes in specific ID belonging to item to be itemized
+    Returns:
+        A jsonified representation of a particular item.
+    """
     item = session.query(Item).filter_by(id=item_id).one()
     category = session.query(Category).filter_by(id=category_id).one()
     if item.category_id == category.id:
@@ -175,8 +252,17 @@ def itemJSON(category_id, item_id):
 
 
 def createUser(login_session):
-    newUser = User(name=login_session['username'], email=login_session['email'],
-        picture=login_session['picture'])
+    """
+    createUser: Inserts a user into the database
+    Args:
+        login_session (cookie): The cookie containing the information with
+        which the function will create a new user
+    Returns:
+        The ID of the newly created user
+    """
+    newUser = User(name=login_session['username'],
+                   email=login_session['email'],
+                   picture=login_session['picture'])
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
@@ -184,11 +270,13 @@ def createUser(login_session):
 
 
 def getUserInfo(user_id):
-    user = session.query(User).filter_by(id = user_id).one()
+    # Returns the user with the corresponding ID, taken from arg 'user_id'
+    user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
 def getUserID(email):
+    # Returns the ID of a user with an email matching arg 'email', or nothing
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
@@ -198,14 +286,16 @@ def getUserID(email):
 
 @app.route('/login')
 def Login():
-    state=''.join(random.choice(string.ascii_uppercase + string.digits)
-        for x in xrange(32))
+    # Creates a template with a randomized state for third-party validation
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
     login_session['state'] = state
-    return render_template('login.html', STATE = state)
+    return render_template('login.html', STATE=state)
 
 
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
+    # Logs user into site via Facebook
     if request.args.get('state') != login_session.get('state'):
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -217,7 +307,9 @@ def fbconnect():
         'web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (app_id, app_secret, access_token)
+    url = ("https://graph.facebook.com/oauth/access_token?grant_type=fb_"
+           "exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s"
+           % (app_id, app_secret, access_token))
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
 
@@ -225,7 +317,6 @@ def fbconnect():
     userinfo_url = "https://graph.facebook.com/v2.4/me"
     # strip expire tag from access token
     token = result.split("&")[0]
-
 
     url = 'https://graph.facebook.com/v2.4/me?%s&fields=name,id,email' % token
     h = httplib2.Http()
@@ -238,12 +329,14 @@ def fbconnect():
     login_session['email'] = data["email"]
     login_session['facebook_id'] = data["id"]
 
-    # The token must be stored in the login_session in order to properly logout, let's strip out the information before the equals sign in our token
+    # The token must be stored in the login_session in order to properly logout
+    # let's strip out the information before the equals sign in our token
     stored_token = token.split("=")[1]
     login_session['access_token'] = stored_token
 
     # Get user picture
-    url = 'https://graph.facebook.com/v2.4/me/picture?%s&redirect=0&height=200&width=200' % token
+    url = ("https://graph.facebook.com/v2.4/me/picture?%s&redirect="
+           "0&height=200&width=200" % token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
@@ -259,11 +352,12 @@ def fbconnect():
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
-
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "max-width: 200px; max-height: 200px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += '"style = "max-width: 200px; max-height: 200px;'
+    output += 'border-radius: 150px; -webkit-border-radius: 150px;'
+    output += '-moz-border-radius: 150px;"> '
 
     flash("Now logged in as %s" % login_session['username'])
     return output
@@ -274,10 +368,11 @@ def fbdisconnect():
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
+    url = ('https://graph.facebook.com/%s/permissions?access_token=%s'
+           % (facebook_id, access_token))
     h = httplib2.Http()
     result = h.request(url, 'DELETE')[1]
-    return "you have been logged out"
+    return "You have been logged out successfully."
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -332,8 +427,8 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(
-            json.dumps('Current user is already connected.'),200)
+        response = make_response(json.dumps(
+            'Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -366,7 +461,10 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' "style = "max-width: 200px; max-height: 200px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += '"style = "max-width: 200px; max-height: 200px;'
+    output += 'border-radius: 150px; -webkit-border-radius: 150px;'
+    output += '-moz-border-radius: 150px;"> '
+
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     print login_session['user_id']
@@ -382,30 +480,33 @@ def gdisconnect():
     print 'User name is: '
     print login_session.get('username')
     if access_token is None:
- 	print 'Access Token is None'
-    	response = make_response(json.dumps('Current user not connected.'), 401)
-    	response.headers['Content-Type'] = 'application/json'
-    	return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+        print 'Access Token is None'
+    	response = make_response(json.dumps(
+            'Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    url = ('https://accounts.google.com/o/oauth2/revoke?token=%s'
+           % login_session['access_token'])
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print 'result is '
     print result
     if result['status'] == '200':
-	del login_session['access_token']
-    	del login_session['gplus_id']
-    	response = make_response(json.dumps('Successfully disconnected.'), 200)
-    	response.headers['Content-Type'] = 'application/json'
-    	return response
+        del login_session['access_token']
+        del login_session['gplus_id']
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
     else:
-    	response = make_response(json.dumps
-            ('Failed to revoke token for given user.', 400))
-    	response.headers['Content-Type'] = 'application/json'
-    	return response
+        response = make_response(json.dumps(
+            'Failed to revoke token for given user.', 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 
 @app.route('/disconnect')
 def disconnect():
+    # Removes values from login_session cookie.
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
@@ -427,4 +528,4 @@ def disconnect():
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host = '0.0.0.0', port = 5000)
+    app.run(host='0.0.0.0', port=5000)
